@@ -1,0 +1,103 @@
+{% extends 'casos/base.html' %}
+
+{% block contenido %}
+<h2>Detalle del Caso: {{ caso.codigo }}</h2>
+
+<!-- Mensajes de éxito o error -->
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert-success">{{ message }}</div>
+        {% else %}
+            <div class="alert-warning">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if not caso.estado.permite_pagos %}
+    <div class="alert-warning">
+        <strong>Aviso:</strong> Este caso no admite pagos debido a que su estado actual es <em>{{ caso.estado.nombre }}</em>.
+    </div>
+{% endif %}
+
+<p><strong>Título:</strong> {{ caso.titulo }}</p>
+<p><strong>Cliente:</strong> {{ caso.cliente.nombres }} ({{ caso.cliente.documento }})</p>
+<p><strong>Estado:</strong> {{ caso.estado.nombre }}</p>
+<p><strong>Fecha de Inicio:</strong> {{ caso.fecha_inicio|date:"d/m/Y" }}</p>
+<p><strong>Descripción:</strong> {{ caso.descripcion }}</p>
+
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+<h3>Expedientes Asociados y Subida de Documentos</h3>
+<ul>
+    {% for exp in expedientes %}
+        <li style="margin-bottom: 15px;">
+            <strong>Exp. {{ exp.numero }}</strong> - {{ exp.juzgado }} (Presentado el: {{ exp.fecha_presentacion|date:"d/m/Y" }})
+            {% if exp.documento %}
+                <br>📄 <strong>Documento adjunto:</strong> <a href="{{ exp.documento.url }}" target="_blank">Ver / Descargar Documento</a>
+            {% else %}
+                <br><em>Sin documento adjunto.</em>
+            {% endif %}
+            
+            <!-- Formulario para subir documento -->
+            <form method="POST" enctype="multipart/form-data" style="margin-top: 8px;">
+                {% csrf_token %}
+                <input type="hidden" name="expediente_id" value="{{ exp.id }}">
+                <input type="file" name="documento" required style="padding: 4px;">
+                <button type="submit" name="btn_documento" class="btn" style="padding: 4px 8px; font-size: 12px;">Subir Documento</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No hay expedientes registrados para este caso.</li>
+    {% endfor %}
+</ul>
+
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
+
+<h3>Historial de Pagos</h3>
+<p><strong>Total acumulado:</strong> S/. {{ caso.total_pagado|floatformat:2 }}</p>
+
+<!-- Formulario para Registrar Pagos (método POST) -->
+<div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+    <h4>Registrar Nuevo Pago</h4>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom: 10px;">
+            <label for="monto"><strong>Monto (S/.):</strong></label><br>
+            <input type="number" step="0.01" name="monto" id="monto" required style="padding: 6px; width: 200px;">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label for="descripcion"><strong>Descripción:</strong></label><br>
+            <input type="text" name="descripcion" id="descripcion" style="padding: 6px; width: 300px;">
+        </div>
+        <button type="submit" name="btn_pago" class="btn">Registrar Pago</button>
+    </form>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Monto</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pago in pagos %}
+        <tr>
+            <td>{{ pago.fecha|date:"d/m/Y" }}</td>
+            <td>S/. {{ pago.monto|floatformat:2 }}</td>
+            <td>{{ pago.descripcion|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No se registran pagos para este caso.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<a href="{% url 'lista_casos' %}" class="btn btn-secondary">Volver al Listado</a>
+<a href="{% url 'api_caso' caso.id %}" target="_blank" class="btn">Ver JSON del Caso</a>
+{% endblock %}

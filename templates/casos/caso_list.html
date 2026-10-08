@@ -1,0 +1,57 @@
+{% extends 'casos/base.html' %}
+
+{% block contenido %}
+<h2>Listado de Casos</h2>
+
+<!-- Formulario de filtro por estado por GET[cite: 1] -->
+<form method="GET" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+    <label for="estado"><strong>Filtrar por Estado:</strong></label>
+    <select name="estado" id="estado" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="todos">-- Todos los Estados --</option>
+        {% for e in estados %}
+            <option value="{{ e.id }}" {% if estado_seleccionado == e.id|stringformat:"s" %}selected{% endif %}>
+                {{ e.nombre }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn">Filtrar</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Abogados Asignados</th>
+            <th>Total Pagado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for caso in casos %}
+        <tr>
+            <td>{{ caso.codigo }}</td>
+            <td>{{ caso.cliente.nombres }}</td>
+            <td>{{ caso.estado.nombre }}</td>
+            <td>
+                {% for abogado in caso.abogados.all %}
+                    {{ abogado.get_full_name|default:abogado.username }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    Sin abogados
+                {% endfor %}
+            </td>
+            <td>S/. {{ caso.total_pagado|floatformat:2 }}</td>
+            <td>
+                <a href="{% url 'detalle_caso' caso.id %}" class="btn">Ver Detalle</a>
+                <a href="{% url 'api_caso' caso.id %}" target="_blank" class="btn btn-secondary">JSON API</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No existen casos para el filtro seleccionado.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

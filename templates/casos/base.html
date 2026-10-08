@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Vargas & Asociados - Portal Legal</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; }
+        header { background-color: #1f2937; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; margin-right: 20px; text-decoration: none; font-weight: bold; }
+        .container { padding: 30px; max-width: 1000px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        footer { text-align: center; padding: 20px; background-color: #1f2937; color: #9ca3af; margin-top: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table, th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+        th { background-color: #f3f4f6; }
+        .btn { display: inline-block; padding: 8px 12px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        .btn-danger { background-color: #dc2626; }
+        .btn-secondary { background-color: #4b5563; }
+        .alert-warning { background-color: #fef3c7; color: #92400e; padding: 12px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #fde68a; }
+        .alert-success { background-color: #d1fae5; color: #065f46; padding: 12px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #a7f3d0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Vargas & Asociados</h2>
+        <nav>
+            <a href="{% url 'lista_clientes' %}">Clientes</a>
+            <a href="{% url 'lista_casos' %}">Casos</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block contenido %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Estudio Jurídico Vargas & Asociados</p>
+    </footer>
+</body>
+</html>

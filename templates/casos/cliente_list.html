@@ -1,0 +1,36 @@
+{% extends 'casos/base.html' %}
+
+{% block contenido %}
+<h2>Gestión de Clientes</h2>
+<a href="{% url 'crear_cliente' %}" class="btn">Nuevo Cliente</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombres</th>
+            <th>Documento (DNI/RUC)</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in clientes %}
+        <tr>
+            <td>{{ cliente.nombres }}</td>
+            <td>{{ cliente.documento }}</td>
+            <td>{{ cliente.telefono|default:"-" }}</td>
+            <td>{{ cliente.correo }}</td>
+            <td>
+                <a href="{% url 'editar_cliente' cliente.id %}" class="btn">Editar</a>
+                <a href="{% url 'eliminar_cliente' cliente.id %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No hay clientes registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
